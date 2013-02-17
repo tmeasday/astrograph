@@ -8,12 +8,21 @@
   </ul>
 </template>
 
+<template name="dataBrowserToggle">
+  {{#if isOpen this}}
+    <a href="#" class="retract">-</span>
+  {{else}}
+    <a href="#" class="expand">+</span>
+  {{/if}}
+</template>
+
 <template name="dataBrowserCollection">
   <li>
-    {{this}}
-    {{#if open}}
+    {{> dataBrowserToggle path}}
+    {{name}}
+    {{#if isOpen path}}
       <ul class="documents">
-        {{#each documents}}
+        {{#each documents path}}
           {{> dataBrowserDocument}}
         {{/each}}
       </ul>
@@ -23,27 +32,33 @@
 
 <template name="dataBrowserDocument">
   <li>
-    {{_id}}
-    {{> dataBrowserObject this}}
+    {{> dataBrowserToggle path}}
+    {{doc._id}}
+    {{#if isOpen path}}
+      {{> dataBrowserObject asObject}}
+    {{/if}}
   </li>
 </template>
 
 <template name="dataBrowserObject">
   <ul class="object">
-    {{#eachKeyValue this}}
+    {{#eachKeyValueWithPath this}}
       <li>
+        {{> dataBrowserToggle path}}
         {{key}}
-        {{renderDataBrowserNode value}}
+        {{#if isOpen path}}
+          {{renderDataBrowserNode value path}}
+        {{/if}}
       </li>
-    {{/eachKeyValue}}
+    {{/eachKeyValueWithPath}}
   </ul>
 </template>
 
 <template name="dataBrowserArray">
   <ul class="array">
-    {{#each this}}
+    {{#each withPath}}
       <li>
-        {{renderDataBrowserNode this}}
+        {{renderDataBrowserNode this.value this.path}}
       </li>
     {{/each}}
   </ul>
