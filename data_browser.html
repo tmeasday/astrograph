@@ -19,7 +19,7 @@
 <template name="dataBrowserCollection">
   <li>
     {{> dataBrowserToggle path}}
-    {{name}}
+    <span {{dataBrowserPulseClasses path}}>{{name}}</span>
     {{#if isOpen path}}
       <ul class="documents">
         {{#each documents path}}
@@ -33,7 +33,7 @@
 <template name="dataBrowserDocument">
   <li>
     {{> dataBrowserToggle path}}
-    {{doc._id}}
+    <span {{dataBrowserPulseClasses path}}>{{doc._id}}</span>
     {{#if isOpen path}}
       {{> dataBrowserObject asObject}}
     {{/if}}
@@ -45,7 +45,7 @@
     {{#eachKeyValueWithPath this}}
       <li>
         {{> dataBrowserToggle path}}
-        {{key}}
+        <span {{dataBrowserPulseClasses path}}>{{key}}</span>
         {{#if isOpen path}}
           {{renderDataBrowserNode value path}}
         {{/if}}
@@ -65,5 +65,7 @@
 </template>
 
 <template name="dataBrowserScalar">
-  <span class="scalar">{{this}}</span>
+  <span class="scalar">
+    <span {{dataBrowserPulseClasses path}}>{{value}}</span>
+  </span>
 </template>

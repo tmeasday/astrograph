@@ -1,8 +1,47 @@
 Meteor.startup(function() {
   if (Meteor.Router) {
     Meteor.Router.add('/data-browser', 'dataBrowser');
-  }  
+  }
+  
+  var pulseAt = function(path) {
+    console.log('pulsing ' + path);
+    Session.set('dataBrowser-' + path + '-pulse', 'dataBrowserRed');
+    Meteor.setTimeout(function() {
+      Session.set('dataBrowser-' + path + '-pulse', null);
+    }, 500);
+  }
+  
+  var pulse = function(path) {
+    pulseAt(path);
+    var shorter = path.replace(/-[^\-]*$/, '');
+    if (shorter !== path) pulse(shorter);
+  }
+  
+  var walk = function(objA, objB, path) {
+    // XXX: no point in looking for things missing from objA right now
+    if (_.isArray(objA)) {
+      _.each(objA, function(v, i) {
+        if (!_.isEqual(v, objB[i])) walk(v, objB[i], path + '-' + i);
+      })
+    } else if (_.isObject(objA)) {
+      _.each(objA, function(v, k) {
+        if (!_.isEqual(v, objB[k])) walk(v, objB[k], path + '-' + k);
+      });
+    } else {
+      pulse(path)
+    } 
+  }
+  
+  _.each(Meteor._LocalCollectionDriver.collections, function(collection, name) {
+    collection.find().observe({
+      changed: function(newDoc, index, oldDoc) {
+        walk(newDoc, oldDoc, name + '-' + newDoc._id);
+      }
+    })
+  });
 });
+
+//////////////////////
 
 var keyFromPath = function(path) { 
   return 'dataBrowser-' + path + '-open';
@@ -23,15 +62,19 @@ Handlebars.registerHelper('eachKeyValueWithPath', function(pair, fn) {
 })
 
 Handlebars.registerHelper('renderDataBrowserNode', function(obj, path) {
-  var str;
+  var str, pair = {value: obj, path: path};
   if (_.isArray(obj))
-    str = Template.dataBrowserArray({value: obj, path: path});
+    str = Template.dataBrowserArray(pair);
   else if (_.isObject(obj))
-    str = Template.dataBrowserObject({value: obj, path: path});
+    str = Template.dataBrowserObject(pair);
   else
-    str = Template.dataBrowserScalar(obj);
+    str = Template.dataBrowserScalar(pair);
   
   return new Handlebars.SafeString(str);
+});
+
+Handlebars.registerHelper('dataBrowserPulseClasses', function(path) {
+  return 'class=' + Session.get('dataBrowser-' + path + '-pulse');
 });
 
 /////////////
