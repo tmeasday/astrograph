@@ -1,0 +1,54 @@
+<template name="dataBrowser">
+  <h1>Data Browser</h1>
+  
+  <ul id="collections">
+    {{#each collections}}
+      {{> dataBrowserCollection}}
+    {{/each}}
+  </ul>
+</template>
+
+<template name="dataBrowserCollection">
+  <li>
+    {{this}}
+    {{#if open}}
+      <ul class="documents">
+        {{#each documents}}
+          {{> dataBrowserDocument}}
+        {{/each}}
+      </ul>
+    {{/if}}
+  </li>
+</template>
+
+<template name="dataBrowserDocument">
+  <li>
+    {{_id}}
+    {{> dataBrowserObject this}}
+  </li>
+</template>
+
+<template name="dataBrowserObject">
+  <ul class="object">
+    {{#eachKeyValue this}}
+      <li>
+        {{key}}
+        {{renderDataBrowserNode value}}
+      </li>
+    {{/eachKeyValue}}
+  </ul>
+</template>
+
+<template name="dataBrowserArray">
+  <ul class="array">
+    {{#each this}}
+      <li>
+        {{renderDataBrowserNode this}}
+      </li>
+    {{/each}}
+  </ul>
+</template>
+
+<template name="dataBrowserScalar">
+  <span class="scalar">{{this}}</span>
+</template>

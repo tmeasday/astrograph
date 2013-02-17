@@ -1,0 +1,9 @@
+{
+  "name": "router",
+  "description": "A Data Browser for Meteor apps",
+  "homepage": "https://github.com/tmeasday/meteor-data-browser",
+  "author": "Tom Coleman <tom@thesnail.org>",
+  "version": "0.0.1",
+  "git": "https://github.com/tmeasday/meteor-data-browser.git",
+  "packages": {}
+}
